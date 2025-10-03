@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Gift Of The Givers</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GiftOfTheGivers.styles.css" asp-append-version="true" />
+    <!-- Add Font Awesome and Auth CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <!-- FIXED: Home/Brand link goes to Dashboard when logged in -->
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="navbar-brand" asp-controller="Admin" asp-action="Dashboard">Gift Of The Givers</a>
+                    }
+                    else if (User.IsInRole("Volunteer"))
+                    {
+                        <a class="navbar-brand" asp-controller="Volunteer" asp-action="Dashboard">Gift Of The Givers</a>
+                    }
+                    else
+                    {
+                        <a class="navbar-brand" asp-controller="User" asp-action="Dashboard">Gift Of The Givers</a>
+                    }
+                }
+                else
+                {
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Gift Of The Givers</a>
+                }
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <!-- FIXED: Home link goes to appropriate dashboard -->
+                        <li class="nav-item">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Home</a>
+                                }
+                                else if (User.IsInRole("Volunteer"))
+                                {
+                                    <a class="nav-link text-dark" asp-controller="Volunteer" asp-action="Dashboard">Home</a>
+                                }
+                                else
+                                {
+                                    <a class="nav-link text-dark" asp-controller="User" asp-action="Dashboard">Home</a>
+                                }
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            }
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <!-- Incidents Link -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Incident" asp-action="Index">Incidents</a>
+                            </li>
+
+                            <!-- Admin-only Links -->
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="UserManagement" asp-action="Index">User Management</a>
+                                </li>
+                            }
+
+                            <!-- User Profile & Logout -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Show these when user is NOT authenticated -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- User info on the right -->
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <span class="navbar-text">
+                            Welcome, @User.Identity.Name!
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <text>(Admin)</text>
+                            }
+                            else if (User.IsInRole("Volunteer"))
+                            {
+                                <text>(Volunteer)</text>
+                            }
+                            else
+                            {
+                                <text>(User)</text>
+                            }
+                        </span>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <!-- Display TempData messages -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - Gift Of The Givers - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
